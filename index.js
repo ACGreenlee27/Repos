@@ -68,3 +68,5 @@ function checkIfHomeOwner(isOwner) {
 // checkIfHomeOwner(personTwoHomeOwner)
 
 //homework - write a function/script that takes a number and checks if a number is even or odd
+
+//test
