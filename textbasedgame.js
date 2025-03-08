@@ -30,7 +30,6 @@ async function runGame() {
       console.log("Player opens door", playerOpensDoor);
 
       if (playerOpensDoor === true) {
-        let hasKey = true;
         console.log(
           "The room is small—too small. The walls press in close, rough with damp stone, their surfaces slick with a film of moisture that glistens in the dim light. The air is thick, stagnant, carrying the sour stench of decay, as though something had once been left here to rot. The only light comes from a single, low-burning candle perched on a warped wooden table in the center of the room. Its flame flickers violently, as if disturbed by a breath of air, though the space is deathly still. The shadows it casts writhe along the walls, stretching unnaturally, contorting into shapes that don’t quite make sense. Resting in the dust at the center of the table, is a key. It is ornate, gleaming despite the filth around it, its handle shaped into a twisting, curling design that almost resembles grasping fingers."
         );
@@ -40,7 +39,7 @@ async function runGame() {
             name: "choice",
             message: "Do you want to pick up the key?",
             choices: [
-              { title: "Yes, it feels familiar...it calls to me", value: true },
+              { title: "Yes, it feels familiar...", value: true },
               { title: "No, this feels wrong", value: false },
             ],
           });
@@ -50,7 +49,7 @@ async function runGame() {
         console.log("Player picks up the key", playerPickedUpKey);
 
         if (playerPickedUpKey === true) {
-          let hasKey = true;
+          hasKey = true;
           console.log(
             "The metal is cold when you pick it up—colder than it should be. The teeth of the key are long and jagged, the pattern unsettlingly familiar. It looks as if it would fit the closet upstairs. The moment the thought enters your mind, a soft sound drifts from the darkened corners of the room—a whisper, too faint to understand, yet unmistakably there."
           );
@@ -62,7 +61,7 @@ async function runGame() {
       }
     }
     if (whereToGo === "Closet" && hasKey === true) {
-      let hasAxe = true;
+      hasAxe = true;
       console.log(
         "The key slides into the lock with an unsettling smoothness, as if it has always belonged there. Your breath catches as you hesitate, fingers tightening around the handle. The air around you seems to shift, thickening, growing heavier with something unseen but unmistakably present. You turn the key. The lock clicks open with a hollow, mechanical finality. The door swings inward, slow and deliberate, revealing nothing but darkness beyond. The air that seeps out is stale, tinged with something coppery and sour. Your fingers fumble along the wall until they find the thin chain of a single hanging lightbulb. You pull. The bulb flickers to life with a buzzing hum. And then you see them. The walls are covered—plastered with yellowing photographs, some curling at the edges, others smeared with something dark. Each image is worse than the last: bodies twisted unnaturally, faces frozen in silent screams, deep gashes carved into pale skin. The same room appears again and again in different angles—a dark but roomy place. Your stomach lurches, but something anchors you in place, something cold and pulsing beneath your ribs. In the center of the closet, positioned like an offering, is a single wooden chair. And resting on the seat, gleaming even under the dim light, is an axe covered in dark stains you dare not question. The handle is worn smooth, the grip molded with the shape of past hands. Without thinking, your fingers curl around it. The weight is perfect. Comfortable. Familiar. A pulse of something dark courses through you. The walls seem closer now, the faces in the photographs staring, watching, waiting. Somewhere in the house, a floorboard creaks."
       );
