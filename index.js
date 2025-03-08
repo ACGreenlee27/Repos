@@ -41,7 +41,7 @@ function checkover21(age, name, isOwner) {
   }
 }
 
-checkover21(personOneAge, personOneName, personOneHomeOwner);
+// checkover21(personOneAge, personOneName, personOneHomeOwner);
 
 var numberOfAnimalsOwned = 2;
 var noAnimalsOwned = 0;
@@ -69,4 +69,12 @@ function checkIfHomeOwner(isOwner) {
 
 //homework - write a function/script that takes a number and checks if a number is even or odd
 
-//test
+function isEvenOrOdd(number) {
+  if (number % 2 === 0) {
+    console.log("The number is even");
+  } else {
+    console.log("The number is odd");
+  }
+}
+
+isEvenOrOdd(13);
