@@ -7,7 +7,7 @@ let whereToGo = "";
 let hasKey = false;
 let endGame = false;
 let hasAxe = false;
-let playerName = "";
+export let playerName = "";
 
 export function updateKey() {
   hasKey = true;
