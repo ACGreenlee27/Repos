@@ -5,7 +5,7 @@ import { atticRoute } from "./src/routes/attic.js";
 
 let whereToGo = "";
 let hasKey = false;
-let endGame = false;
+export let endGame = false;
 let hasAxe = false;
 export let playerName = "";
 
@@ -14,6 +14,10 @@ export function updateKey() {
 }
 export function updateAxe() {
   hasAxe = true;
+}
+
+export function updateGameOver() {
+  endGame = true;
 }
 async function runGame() {
   async function routes() {
@@ -105,6 +109,7 @@ async function runGame() {
     whereToGo = await askPlayerwhereToGo();
     await routes();
   }
+  console.log("Game Over");
 }
 
 runGame();
