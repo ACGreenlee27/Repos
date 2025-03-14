@@ -18,7 +18,7 @@ export async function basementRoute(playerName) {
     return response.choice;
   }
   const playerOpensDoor = await askPlayerToOpenDoor(); //ask player if they want to open door
-  console.log("Player opens door", playerOpensDoor);
+  //console.log("Player opens door", playerOpensDoor);
 
   if (playerOpensDoor === true) {
     console.log(
@@ -37,7 +37,7 @@ export async function basementRoute(playerName) {
       return response.choice;
     }
     const playerPickedUpKey = await askPlayerAboutKey(); //ask player if they want to pick up the key
-    console.log("Player picks up the key", playerPickedUpKey);
+    // console.log("Player picks up the key", playerPickedUpKey);
 
     if (playerPickedUpKey === true) {
       updateKey();

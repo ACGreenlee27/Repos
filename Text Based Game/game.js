@@ -105,7 +105,7 @@ async function runGame() {
   );
 
   while (endGame === false) {
-    console.log("haskey", hasKey);
+    //console.log("haskey", hasKey);
     whereToGo = await askPlayerwhereToGo();
     await routes();
   }
