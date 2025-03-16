@@ -2,13 +2,16 @@ import prompts from "prompts";
 import { basementRoute } from "./src/routes/basement.js"; //remeber to put the .js
 import { closetRoute } from "./src/routes/closet.js";
 import { atticRoute } from "./src/routes/attic.js";
-import { shedRoute } from "./src/routes/shed.js";
+import { outsideRoute } from "./src/routes/shed.js";
+import { confessionRoute } from "./src/routes/policeStation.js";
 
 export const gameState = {
   whereToGo: "",
   hasKey: false,
   endGame: false,
   hasAxe: false,
+  hasGun: true,
+  hasBottle: false,
   playerName: "",
   area: 0,
 };
@@ -50,8 +53,11 @@ async function runGame() {
       case "Attic":
         await atticRoute(gameState.hasAxe);
         break;
-      case "Shed":
-        await shedRoute();
+      case "Outside":
+        await outsideRoute();
+        break;
+      case "Backyard":
+        await backyardRoute();
         break;
       case "Police Station":
         await confessionRoute();
@@ -85,12 +91,12 @@ async function runGame() {
       message: "Where would you like to go?",
       choices: [
         { title: "Shed", value: "Shed" },
+        { title: "Backyard", value: "Backyard" },
         { title: "END GAME", value: "END GAME" },
       ],
     });
     return response.choice;
   }
-
   //Ask player where to go
   async function policeStation() {
     const response = await prompts({
@@ -156,7 +162,7 @@ async function runGame() {
     A single tug, and the wooden ladder creaks down, releasing a gust of stale air. 
     The attic waits, its rafters lost in shadow, filled with forgotten relics and the weight of something unseen—watching. 
     Everywhere, the house breathes, the walls settling with tired groans, the fog pressing against the windows like ghostly hands...`);
-  await delay(10000);
+  //await delay(10000);
   console.log("Where would you like to explore?");
 
   while (gameState.endGame === false) {
