@@ -1,5 +1,5 @@
 import prompts from "prompts";
-import { updateArea } from "../../game.js";
+import { gameState } from "../../game.js";
 
 export async function confessionRoute() {
   console.log("Station flavor text");
@@ -15,5 +15,6 @@ export async function confessionRoute() {
     });
     return response.choice;
   }
+
+  const playerConfessed = await askPlayerToConfess();
 }
-const playerConfessed = await confessionRoute();

@@ -2,8 +2,11 @@ import prompts from "prompts";
 import { basementRoute } from "./src/routes/basement.js"; //remeber to put the .js
 import { closetRoute } from "./src/routes/closet.js";
 import { atticRoute } from "./src/routes/attic.js";
-import { outsideRoute } from "./src/routes/shed.js";
+import { outsideRoute } from "./src/routes/outside.js";
 import { confessionRoute } from "./src/routes/policeStation.js";
+import { backyardRoute } from "./src/routes/backyard.js";
+import { shedRoute } from "./src/routes/shed.js";
+import { exteriorRoute } from "./src/routes/exterior.js";
 
 export const gameState = {
   whereToGo: "",
@@ -28,6 +31,12 @@ export function updateKey() {
 export function updateAxe() {
   gameState.hasAxe = true;
 }
+export function updateBottle() {
+  gameState.hasBottle = true;
+}
+export function updateGun() {
+  gameState.hasGun = true;
+}
 
 export function updateGameOver() {
   gameState.endGame = true;
@@ -46,7 +55,6 @@ async function runGame() {
       case "END GAME":
         gameState.endGame = true;
         break;
-
       case "Closet":
         await closetRoute(gameState.hasKey);
         break;
@@ -56,11 +64,17 @@ async function runGame() {
       case "Outside":
         await outsideRoute();
         break;
-      case "Backyard":
-        await backyardRoute();
+      case "Shed":
+        await shedRoute(gameState.hasGun);
         break;
-      case "Police Station":
+      case "Backyard":
+        await backyardRoute(gameState.hasBottle);
+        break;
+      case "Station":
         await confessionRoute();
+        break;
+      case "Exterior":
+        await exteriorRoute(gameState.playerName);
         break;
 
       default:
@@ -98,7 +112,7 @@ async function runGame() {
     return response.choice;
   }
   //Ask player where to go
-  async function policeStation() {
+  async function station() {
     const response = await prompts({
       type: "select",
       name: "choice",
@@ -110,24 +124,42 @@ async function runGame() {
     });
     return response.choice;
   }
+  //Ask player where to go
+  async function exterior() {
+    const response = await prompts({
+      type: "select",
+      name: "choice",
+      message: "What would you like to do?",
+      choices: [
+        { title: "Pour the gasoline", value: "Pour the gasoline" },
+        { title: "END GAME", value: "END GAME" },
+      ],
+    });
+    return response.choice;
+  }
 
   async function askForName() {
     const response = await prompts({
       type: "text",
       name: "playerName",
-      message: "What is your name?",
+      message:
+        "I suppose it's a bit akward to ask but, do you remember your own name? If so, tell me. What is your name?",
     });
     return response.playerName;
   }
   gameState.playerName = await askForName(); //Save Player Name
-  console.log("Hello " + gameState.playerName);
+  console.log(
+    "Hello " +
+      gameState.playerName +
+      ". It's been some time since we've last spoken. You've gone to great lengths to keep me away."
+  );
 
   //Ask player first question, return, save answer
   async function askPlayerWakeUpQuestion() {
     const response = await prompts({
       type: "select",
       name: "choice",
-      message: "Do you know where you are?",
+      message: "Do you know where you are right now?",
       choices: [
         { title: "Yes", value: true },
         { title: "No", value: false },
@@ -175,7 +207,10 @@ async function runGame() {
       gameState.whereToGo = await outside();
     }
     if (gameState.area === 2) {
-      gameState.whereToGo = await policeStation();
+      gameState.whereToGo = await station();
+    }
+    if (gameState.area === 3) {
+      gameState.whereToGo = await exterior();
     }
 
     await routes();
