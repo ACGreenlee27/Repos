@@ -13,15 +13,18 @@ export const gameState = {
   hasKey: false,
   endGame: false,
   hasAxe: false,
-  hasGun: true,
+  hasGun: false,
   hasBottle: false,
   playerName: "",
   area: 0,
-  debug: false,
+  debug: true,
 };
 
 export async function delay(ms) {
   return new Promise(function (resolve, reject) {
+    if (gameState.debug === true) {
+      resolve();
+    }
     setTimeout(resolve, ms);
   });
 }
@@ -186,30 +189,34 @@ async function runGame() {
     You step cautiously onto the rotting wooden porch, the boards creaking beneath your weight as a thick fog coils around your ankles. 
     The house looms before you, its once-proud frame now sagging, the paint peeling in long, curling strips...`
   );
-  //await delay(10000);
+  await delay(5000);
   console.log(`A single, shattered window gapes like a vacant eye, its jagged edges glinting in the dim, gray light. 
     The front door groans as you push it open, revealing a hallway choked with dust and the scent of damp wood. 
     Faint moonlight filters through gaps in the warped walls, casting twisting shadows. 
     To your left, a strangely ornate but narrow closet door stands firmly shut, a faint scratching noise echoing from within; 
     but whether it's the wind or something else, you can’t be sure...`);
 
-  //await delay(10000);
+  await delay(5000);
 
   console.log(`Ahead, a staircase descends into the basement, its steps disappearing into an abyss of black. 
     The air down there is colder, thick with the metallic tang of old, stagnant water. 
     Something shifts in the darkness below, too faint to see but heavy enough to sense...`);
 
-  // await delay(10000);
+  await delay(5000);
 
   console.log(`Above you, a frayed rope dangles from the ceiling, leading to the attic hatch. 
     A single tug, and the wooden ladder creaks down, releasing a gust of stale air. 
     The attic waits, its rafters lost in shadow, filled with forgotten relics and the weight of something unseen—watching. 
     Everywhere, the house breathes, the walls settling with tired groans, the fog pressing against the windows like ghostly hands...`);
-  //await delay(10000);
+  await delay(5000);
   console.log("Where would you like to explore?");
 
   while (gameState.endGame === false) {
     //console.log("haskey", hasKey);
+
+    if (gameState.debug === true) {
+      console.log(gameState);
+    }
 
     if (gameState.area === 0) {
       gameState.whereToGo = await house();

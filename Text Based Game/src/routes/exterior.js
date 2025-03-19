@@ -67,15 +67,15 @@ export async function exteriorRoute() {
       choices: [
         {
           title: "Yes, I did what I had to! I did what YOU told me to.",
-          value: true,
+          value: 1,
         },
         {
           title: "No, I regret everything. Why did you make me do this?",
-          value: false,
+          value: 2,
         },
         {
           title: "I don't know how to feel.",
-          value: false,
+          value: 3,
         },
       ],
     });
@@ -84,7 +84,7 @@ export async function exteriorRoute() {
 
   const endingPath1 = await exteriorChoice();
 
-  if (gameState.hasBottle === true && endingPath1 === false) {
+  if (gameState.hasBottle === true && endingPath1 === 2) {
     console.log(
       `The fire roars louder than you thought fire could. A violent, living thing, crackling and snarling, spitting sparks into the night. 
       You stumble back, your breath ripping out of you in ragged sobs.`
@@ -165,8 +165,9 @@ export async function exteriorRoute() {
     );
 
     updateGameOver();
+    return;
   }
-  if (gameState.hasBottle === false && endingPath1 === true) {
+  if (gameState.hasBottle === false && endingPath1 === 1) {
     console.log(
       `The fire roars louder than you thought fire could. A violent, living thing, crackling and snarling, spitting sparks into the night. 
       You stumble back, your breath ripping out of you in ragged sobs.`
@@ -233,8 +234,9 @@ export async function exteriorRoute() {
     console.log(`As the flames grow taller before you, the distant sound of sirens draw your attention. 
         The police and fire services rush down the long driveway of the once pristine home you built with your family.`);
     updateGameOver();
+    return;
   }
-  if (gameState.hasGun === true && endingPath1 === false) {
+  if (gameState.hasGun === true && endingPath1 === 3) {
     console.log(
       "Remembering the gun in your pocket, your trembling hand caresses the fabric separating you from your final decision. End it, " +
         gameState.playerName +
@@ -247,12 +249,14 @@ export async function exteriorRoute() {
     // await delay(20);
     console.log("End it.");
     updateGameOver();
-  } else {
-    console.log(
-      "Who are you speaking to, " +
-        gameState.playerName +
-        "? I'm only a figment of your imagination."
-    );
-    updateGameOver();
+    return;
   }
+
+  console.log(
+    "Who are you speaking to, " +
+      gameState.playerName +
+      "? I'm only a figment of your imagination."
+  );
+  updateGameOver();
+  return;
 }

@@ -20,35 +20,35 @@ export async function atticRoute(hasAxe) {
     console.log(
       `A platter sits at its center, tarnished silver reflecting the weak light. And on it—a severed head. Your breath falters...`
     );
-    // await delay(5000);
+    await delay(5000);
     console.log(`The face is twisted in an expression of terror, mouth slack, eyes wide and unseeing. But it’s not just any face. 
       You know this face. It is burned into your memory, into your past...`);
-    // await delay(5000);
+    await delay(5000);
     console.log(
       `The recognition slams into you like a physical blow, nausea twisting your stomach...`
     );
-    // await delay(5000);
+    await delay(5000);
     console.log(
       `Your gaze flickers away, desperate to escape the sight, but lands on something worse...`
     );
-    // await delay(5000);
+    await delay(5000);
     console.log(`Scattered across the attic floor, brittle with age, are yellowed news clippings. 
       The headlines scream at you in bold, black ink:`);
-    // await delay(2000);
+    await delay(2000);
     console.log(
       `LOCAL FAMILY MURDERED IN GRISLY HOME SLAUGHTER. KILLER NEVER CAUGHT—IS THE HOUSE CURSED? BODIES NEVER FOUND.`
     );
-    // await delay(5000);
+    await delay(5000);
     console.log(
       `You scan the articles with growing horror, your breath coming faster. The dates. The names. The faces. They belong to them. To you...`
     );
-    // await delay(2000);
+    await delay(2000);
     console.log(
       `The gnarled faces of your flesh and blood stare back at you, the heavy sound of your breathing filling the air like a thick cloud as you clutch the axe in your hands....`
     );
-    // await delay(2000);
+    await delay(2000);
     console.log("What have you done " + gameState.playerName + "?");
-    // await delay(5000);
+    await delay(5000);
     async function givePlayerEndingOption() {
       const response = await prompts({
         type: "select",
