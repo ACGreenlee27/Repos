@@ -17,6 +17,7 @@ export const gameState = {
   hasBottle: false,
   playerName: "",
   area: 0,
+  debug: false,
 };
 
 export async function delay(ms) {
@@ -24,7 +25,11 @@ export async function delay(ms) {
     setTimeout(resolve, ms);
   });
 }
-
+export function updateDelay() {
+  if (gameState.debug === true) {
+    updateDelay(0);
+  }
+}
 export function updateKey() {
   gameState.hasKey = true;
 }
@@ -74,7 +79,7 @@ async function runGame() {
         await confessionRoute();
         break;
       case "Exterior":
-        await exteriorRoute(gameState.playerName);
+        await exteriorRoute();
         break;
 
       default:
@@ -118,7 +123,10 @@ async function runGame() {
       name: "choice",
       message: "What would you like to do?",
       choices: [
-        { title: "Confess", value: "Confess" },
+        {
+          title: "I should visit the police station. They'll know what to do.",
+          value: "Station",
+        },
         { title: "END GAME", value: "END GAME" },
       ],
     });
@@ -131,7 +139,10 @@ async function runGame() {
       name: "choice",
       message: "What would you like to do?",
       choices: [
-        { title: "Pour the gasoline", value: "Pour the gasoline" },
+        {
+          title: "Pour the gasoline! Burn away the evidence!",
+          value: "Exterior",
+        },
         { title: "END GAME", value: "END GAME" },
       ],
     });
@@ -175,14 +186,14 @@ async function runGame() {
     You step cautiously onto the rotting wooden porch, the boards creaking beneath your weight as a thick fog coils around your ankles. 
     The house looms before you, its once-proud frame now sagging, the paint peeling in long, curling strips...`
   );
-  // await delay(10000);
+  //await delay(10000);
   console.log(`A single, shattered window gapes like a vacant eye, its jagged edges glinting in the dim, gray light. 
     The front door groans as you push it open, revealing a hallway choked with dust and the scent of damp wood. 
     Faint moonlight filters through gaps in the warped walls, casting twisting shadows. 
     To your left, a strangely ornate but narrow closet door stands firmly shut, a faint scratching noise echoing from within; 
     but whether it's the wind or something else, you can’t be sure...`);
 
-  // await delay(10000);
+  //await delay(10000);
 
   console.log(`Ahead, a staircase descends into the basement, its steps disappearing into an abyss of black. 
     The air down there is colder, thick with the metallic tang of old, stagnant water. 

@@ -72,17 +72,19 @@ export async function atticRoute(hasAxe) {
     const endingChoice = await givePlayerEndingOption();
     if (endingChoice === true) {
       updateArea(1);
-      console.log(
-        gameState.playerName + " clutches the axe tighter and leaves the attic."
-      );
-      console.log("Decide to go outside flavor text");
+      console.log(`Your mind goes to the shed. You don't know how, but you know there's gasoline there. 
+        You move toward the stairs, your boots creaking loudly against the old wood, and make your way down into the dark hallway. 
+        Every step feels like the house is pulling you deeper, like it knows what you’re about to do. You reach the door that leads outside. 
+        The wood is cold beneath your hand as you turn the knob.`);
     }
     if (endingChoice === false) {
       updateArea(2);
-      console.log(
-        gameState.playerName + " clutches the axe tighter and leaves the attic."
-      );
-      console.log("Decide to go to the cops flavor text");
+
+      console.log(`The weight of it all presses down on you as you stand there, the cold air cutting through your clothes, biting at your skin. 
+        The axe, still heavy in your grip, feels like an anchor now — something that’s holding you in place, keeping you from sinking into the abyss. You know what you’ve done. 
+        There’s no denying it. It’s all in your hands, in the blood, in the silence that follows you wherever you go. 
+        The house around you seems to grow even darker, its windows black like empty eyes, watching, waiting. But you can’t stay here. You can’t keep pretending.
+        With resolve in your gut, you leave the attic.`);
     }
   } else if (hasAxe === false) {
     console.log(
