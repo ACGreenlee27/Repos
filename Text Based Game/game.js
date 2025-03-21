@@ -17,7 +17,7 @@ export const gameState = {
   hasBottle: false,
   playerName: "",
   area: 0,
-  debug: true,
+  debug: false,
 };
 
 export async function delay(ms) {
@@ -209,7 +209,6 @@ async function runGame() {
     The attic waits, its rafters lost in shadow, filled with forgotten relics and the weight of something unseen—watching. 
     Everywhere, the house breathes, the walls settling with tired groans, the fog pressing against the windows like ghostly hands...`);
   await delay(5000);
-  console.log("Where would you like to explore?");
 
   while (gameState.endGame === false) {
     //console.log("haskey", hasKey);
