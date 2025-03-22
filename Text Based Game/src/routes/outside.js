@@ -2,7 +2,7 @@ import prompts from "prompts";
 import { gameState } from "../../game.js";
 
 export async function outsideRoute() {
-  console.log("Outside description");
+  await typeWriter("Outside description");
 
   async function shedOrBackyard() {
     const response = await prompts({
@@ -20,9 +20,9 @@ export async function outsideRoute() {
   const playerVisitsShed = await shedOrBackyard();
 
   if (playerVisitsShed === true) {
-    console.log("Shed description");
+    await typeWriter("Shed description");
   }
   if (playerVisitsShed === false) {
-    console.log("backyard description.");
+    await typeWriter("backyard description.");
   }
 }

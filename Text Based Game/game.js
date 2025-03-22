@@ -20,6 +20,53 @@ export const gameState = {
   debug: false,
 };
 
+export async function typeWriter(text, delay = 20, maxWidth = 90) {
+  return new Promise(function (resolve, reject) {
+    if (gameState.debug === true) {
+      console.log(text);
+      resolve();
+      return;
+    }
+    function wrapText(text, maxWidth) {
+      const words = text.split(" ");
+      let lines = [];
+      let currentLine = "";
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        currentLine += word + " ";
+
+        if (currentLine.length > maxWidth) {
+          lines.push(currentLine.trim());
+          currentLine = "";
+        } else {
+          if (words.length - 1 === i) {
+            lines.push(currentLine.trim());
+          }
+        }
+      }
+      return lines;
+    }
+    const formattedText = wrapText(text, maxWidth);
+    let i = 0;
+    let currentLine = 0;
+    const interval = setInterval(() => {
+      process.stdout.write(formattedText[currentLine][i]);
+      i++;
+      if (i === formattedText[currentLine].length) {
+        process.stdout.write("\n");
+        currentLine++;
+        i = 0;
+      }
+
+      if (currentLine >= formattedText.length) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, delay);
+  });
+}
+
 export async function delay(ms) {
   return new Promise(function (resolve, reject) {
     if (gameState.debug === true) {
@@ -162,7 +209,7 @@ async function runGame() {
     return response.playerName;
   }
   gameState.playerName = await askForName(); //Save Player Name
-  console.log(
+  await typeWriter(
     "Hello " +
       gameState.playerName +
       ". It's been some time since we've last spoken. You've gone to great lengths to keep me away."
@@ -184,37 +231,32 @@ async function runGame() {
 
   await askPlayerWakeUpQuestion(); //Ask first question
 
-  console.log(
-    `Somewhere deep in your memories, you vaguely recall this place. This...echo of reality; a whisper of long fragmented memories. 
-    You step cautiously onto the rotting wooden porch, the boards creaking beneath your weight as a thick fog coils around your ankles. 
-    The house looms before you, its once-proud frame now sagging, the paint peeling in long, curling strips...`
+  await typeWriter(
+    `Somewhere deep in your memories, you vaguely recall this place. This...echo of reality; a whisper of long fragmented memories. You step cautiously onto the rotting wooden porch, the boards creaking beneath your weight as a thick fog coils around your ankles. The house looms before you, its once-proud frame now sagging, the paint peeling in long, curling strips...`
   );
   await delay(5000);
-  console.log(`A single, shattered window gapes like a vacant eye, its jagged edges glinting in the dim, gray light. 
-    The front door groans as you push it open, revealing a hallway choked with dust and the scent of damp wood. 
-    Faint moonlight filters through gaps in the warped walls, casting twisting shadows. 
-    To your left, a strangely ornate but narrow closet door stands firmly shut, a faint scratching noise echoing from within; 
-    but whether it's the wind or something else, you can’t be sure...`);
+  await typeWriter(
+    `A single, shattered window gapes like a vacant eye, its jagged edges glinting in the dim, gray light. The front door groans as you push it open, revealing a hallway choked with dust and the scent of damp wood. Faint moonlight filters through gaps in the warped walls, casting twisting shadows. To your left, a strangely ornate but narrow closet door stands firmly shut, a faint scratching noise echoing from within; but whether it's the wind or something else, you can’t be sure...`
+  );
 
   await delay(5000);
 
-  console.log(`Ahead, a staircase descends into the basement, its steps disappearing into an abyss of black. 
-    The air down there is colder, thick with the metallic tang of old, stagnant water. 
-    Something shifts in the darkness below, too faint to see but heavy enough to sense...`);
+  await typeWriter(
+    `Ahead, a staircase descends into the basement, its steps disappearing into an abyss of black. The air down there is colder, thick with the metallic tang of old, stagnant water. Something shifts in the darkness below, too faint to see but heavy enough to sense...`
+  );
 
   await delay(5000);
 
-  console.log(`Above you, a frayed rope dangles from the ceiling, leading to the attic hatch. 
-    A single tug, and the wooden ladder creaks down, releasing a gust of stale air. 
-    The attic waits, its rafters lost in shadow, filled with forgotten relics and the weight of something unseen—watching. 
-    Everywhere, the house breathes, the walls settling with tired groans, the fog pressing against the windows like ghostly hands...`);
+  await typeWriter(
+    `Above you, a frayed rope dangles from the ceiling, leading to the attic hatch. A single tug, and the wooden ladder creaks down, releasing a gust of stale air. The attic waits, its rafters lost in shadow, filled with forgotten relics and the weight of something unseen—watching. Everywhere, the house breathes, the walls settling with tired groans, the fog pressing against the windows like ghostly hands...`
+  );
   await delay(5000);
 
   while (gameState.endGame === false) {
-    //console.log("haskey", hasKey);
+    //await typeWriter("haskey", hasKey);
 
     if (gameState.debug === true) {
-      console.log(gameState);
+      await typeWriter(gameState);
     }
 
     if (gameState.area === 0) {
@@ -232,7 +274,7 @@ async function runGame() {
 
     await routes();
   }
-  console.log("Game Over");
+  await typeWriter("Game Over");
 }
 
 runGame();
