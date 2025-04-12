@@ -222,11 +222,14 @@ function nameFinder(foundName) {
   return null;
 }
 
-let foundIndex = nameFinder("Alex");
-
-//is not
-//positive logic
-if (foundIndex === null) {
-} else {
+function greeting() {
+  let foundIndex = nameFinder("dsf");
+  //is not
+  //negative logic
+  if (foundIndex === null) {
+    return;
+  }
   console.log(names[foundIndex]);
 }
+
+greeting();
