@@ -20,6 +20,14 @@
 
     const keys = {};
 
+    const collisionSound = new Audio("src/sound/coinPop.mp3");
+
+    // document.addEventListener("mousemove", function (event) {
+    //   const rectangle = canvas.getBoundingClientRect();
+    //   snake.x = event.clientX - rectangle.left;
+    //   snake.y = event.clientY - rectangle.top;
+    // });
+
     document.addEventListener("keydown", function (event) {
       //Homework: Listeners await an action.
       //This function awaits the user depressing a key and switches it to lower case.
@@ -30,6 +38,10 @@
       console.log(event.key);
       keys[event.key.toLowerCase()] = false;
     });
+
+    function playSound() {
+      collisionSound.play();
+    }
 
     //All global vars here
 
@@ -95,12 +107,6 @@
     function updateScore() {
       gameObjects.score = gameObjects.score + 10;
     }
-
-    document.addEventListener("mousemove", function (event) {
-      const rectangle = canvas.getBoundingClientRect();
-      snake.x = event.clientX - rectangle.left;
-      snake.y = event.clientY - rectangle.top;
-    });
 
     function calculateDistance(pointA, pointB) {
       //Calculating the distance between two points
@@ -252,8 +258,8 @@
       if (keys.d) snake.direction += 0.01;
 
       //automatic movement
-      // snake.x += Math.cos(snake.direction) * snake.speed;
-      // snake.y += Math.sign(snake.direction) * snake.speed;
+      snake.x += Math.cos(snake.direction) * snake.speed;
+      snake.y += Math.sin(snake.direction) * snake.speed;
 
       //After all calculations, draw
 
@@ -264,6 +270,7 @@
 
       if (ctx.isPointInPath(coinPath, snake.x, snake.y)) {
         updateScore();
+        playSound();
         addSnakeJoint();
         spawnRandomCoin();
       }
@@ -274,6 +281,7 @@
 
     gameLoop();
 
-    //homework: Detect when snake head comes in contact with the arena
+    //homework: Detect when snake head comes in contact with the arena, kill the snake
+    //Sound fx and animations
   </script>
 </html>
