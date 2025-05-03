@@ -59,11 +59,12 @@
     };
 
     const snake = {
-      x: 100,
-      y: 100,
-      speed: 1,
-      joints: 20,
+      x: 0,
+      y: 37,
+      speed: 0.5,
+      joints: 10,
       jointDistance: 20,
+      direction: 0,
     };
 
     let gameObjects = {
@@ -153,8 +154,8 @@
           joint.point.y = newStart.y;
         }
 
-        newStart.x = joint.point.x + snake.jointDistance;
-        newStart.y = joint.point.y + snake.jointDistance;
+        newStart.x = joint.point.x - snake.jointDistance;
+        newStart.y = joint.point.y - snake.jointDistance;
 
         snakeLength.push(joint); //Homework: After all is said and done, push the new joint to the snakeLength array defined at the beginning of the function
       }
@@ -177,6 +178,21 @@
 
         constrainDistance(point, anchor, snake.jointDistance);
       }
+    }
+
+    function addSnakeJoint() {
+      let lastJoint = snakeJoints[snakeJoints.length - 1];
+      let newJoint = {
+        path: new Path2D(),
+        point: {
+          x: 0,
+          y: 0,
+        },
+      };
+      newJoint.point.x = lastJoint.point.x + snake.jointDistance;
+      newJoint.point.y = lastJoint.point.y + snake.jointDistance;
+
+      snakeJoints.push(newJoint);
     }
 
     function drawPoint(x, y) {
@@ -204,9 +220,10 @@
 
     function spawnRandomCoin() {
       const radius = coin.radius;
-      coin.x = Math.random() * (canvas.width - 2 * radius) + radius;
-      coin.y = Math.random() * (canvas.height - 2 * radius) + radius;
+      coin.x = Math.floor((Math.random() * canvas.width) / 2);
+      coin.y = Math.floor((Math.random() * canvas.height) / 2);
     }
+    spawnRandomCoin();
 
     function gameLoop() {
       //is basically a for loop
@@ -231,10 +248,12 @@
 
       //All game calculations below this point
 
-      // if (keys.w) snake.y -= snake.speed;
-      // if (keys.a) snake.x -= snake.speed;
-      // if (keys.s) snake.y += snake.speed;
-      // if (keys.d) snake.x += snake.speed;
+      if (keys.a) snake.direction -= 0.01;
+      if (keys.d) snake.direction += 0.01;
+
+      //automatic movement
+      // snake.x += Math.cos(snake.direction) * snake.speed;
+      // snake.y += Math.sign(snake.direction) * snake.speed;
 
       //After all calculations, draw
 
@@ -245,6 +264,7 @@
 
       if (ctx.isPointInPath(coinPath, snake.x, snake.y)) {
         updateScore();
+        addSnakeJoint();
         spawnRandomCoin();
       }
 
@@ -254,6 +274,6 @@
 
     gameLoop();
 
-    //homework: Add a score counter displayed at the top. Add the coin back to the game. Figure out how to pick up the coin and make the counter go up.
+    //homework: Detect when snake head comes in contact with the arena
   </script>
 </html>
