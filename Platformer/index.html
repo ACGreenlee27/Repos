@@ -1,4 +1,4 @@
-```<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>A simple HTML document</title>
@@ -89,6 +89,10 @@
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(score, x + boxWidth / 2, y + boxHeight / 2); //divide by two so it centers
+    }
+
+    function updateScore() {
+      gameObjects.score = gameObjects.score + 10;
     }
 
     document.addEventListener("mousemove", function (event) {
@@ -211,7 +215,7 @@
 
       //Game Object Creation
       //Define all new game objects here
-      scoreCounter(0); //hardcoded for now else undefined
+      scoreCounter(gameObjects.score); //hardcoded for now else undefined
       updateSnake();
 
       //createCoin(100, 100, 10);
@@ -239,13 +243,17 @@
       ctx.fillStyle = "pink";
       ctx.fill(coinPath);
 
+      if (ctx.isPointInPath(coinPath, snake.x, snake.y)) {
+        updateScore();
+        spawnRandomCoin();
+      }
+
       drawSnakeDebug();
       requestAnimationFrame(gameLoop);
     }
-    spawnRandomCoin();
+
     gameLoop();
 
     //homework: Add a score counter displayed at the top. Add the coin back to the game. Figure out how to pick up the coin and make the counter go up.
   </script>
 </html>
-```
