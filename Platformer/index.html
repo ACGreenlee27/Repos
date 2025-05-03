@@ -1,0 +1,251 @@
+```<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>A simple HTML document</title>
+  </head>
+
+  <body>
+    <canvas
+      id="myCanvas"
+      width="500"
+      height="500"
+      style="border: 1px solid #000000"
+    >
+    </canvas>
+  </body>
+
+  <script>
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const keys = {};
+
+    document.addEventListener("keydown", function (event) {
+      //Homework: Listeners await an action.
+      //This function awaits the user depressing a key and switches it to lower case.
+      console.log(event.key);
+      keys[event.key.toLowerCase()] = true;
+    });
+    document.addEventListener("keyup", function (event) {
+      console.log(event.key);
+      keys[event.key.toLowerCase()] = false;
+    });
+
+    //All global vars here
+
+    let coin = {
+      //Homework: These are objects that store variables belonging to that object.
+      x: 0,
+      y: 0,
+      radius: 20,
+      speed: 2,
+      dx: 2,
+      dy: 2,
+    };
+
+    let box = {
+      x: 100,
+      y: 100,
+      speed: 6,
+      width: 50,
+      height: 50,
+    };
+
+    const playArea = {
+      x: 0,
+      y: 0,
+      width: canvas.width,
+      height: canvas.height,
+    };
+
+    const snake = {
+      x: 100,
+      y: 100,
+      speed: 1,
+      joints: 20,
+      jointDistance: 20,
+    };
+
+    let gameObjects = {
+      score: 0,
+      highScore: 0,
+    };
+
+    let resetCoin = true;
+    let snakeJoints = [];
+
+    function scoreCounter(score) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const boxWidth = 50;
+      const boxHeight = 30;
+      const x = canvas.width - boxWidth - 5;
+      const y = 5;
+
+      (ctx.fillStyle = "lilac"), ctx.fillRect(x, y, boxWidth, boxHeight);
+
+      ctx.fillStyle = "white";
+      ctx.font = "15px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(score, x + boxWidth / 2, y + boxHeight / 2); //divide by two so it centers
+    }
+
+    document.addEventListener("mousemove", function (event) {
+      const rectangle = canvas.getBoundingClientRect();
+      snake.x = event.clientX - rectangle.left;
+      snake.y = event.clientY - rectangle.top;
+    });
+
+    function calculateDistance(pointA, pointB) {
+      //Calculating the distance between two points
+      const dx = pointB.x - pointA.x;
+      const dy = pointB.y - pointA.y;
+
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function constrainDistance(point, anchor, length) {
+      let distance = calculateDistance(point, anchor);
+      if (distance === 0) {
+        return;
+      }
+
+      const ratio = length / distance;
+
+      const dx = point.x - anchor.x;
+      const dy = point.y - anchor.y;
+
+      (point.x = anchor.x + dx * ratio), (point.y = anchor.y + dy * ratio);
+    }
+
+    function createSnake() {
+      //Homework: This function confuses the hell out of me but I think I have a slightly
+      //...better understanding of it. Since relating it to bubble sort, I can see that we are creating a snake joint by joint
+      //...using the end of the last joint as the beginning of the next joint
+      let snakeLength = [];
+      let newStart = {
+        x: 0,
+        y: 0,
+      };
+      for (let i = 0; i < snake.joints; i++) {
+        //Homework: Why did we use a for loop here? To loop over the object SNAKE and add JOINTS as we create them.
+        const joint = {
+          path: new Path2D(),
+          xStart: 0,
+          yStart: 0,
+          point: {
+            x: 0,
+            y: 0,
+          },
+        };
+
+        if (i === 0) {
+          //Homework: if i is equal to 0, the starting x and y position is the current x and y position of whatever is in the snake object
+          joint.point.x = snake.x;
+          joint.point.y = snake.y;
+        } else {
+          joint.point.x = newStart.x; //Homework: Else, the starting x/y position is the NEW x/y position which is the end of the last joint +10 offset
+          joint.point.y = newStart.y;
+        }
+
+        newStart.x = joint.point.x + snake.jointDistance;
+        newStart.y = joint.point.y + snake.jointDistance;
+
+        snakeLength.push(joint); //Homework: After all is said and done, push the new joint to the snakeLength array defined at the beginning of the function
+      }
+      return snakeLength;
+    }
+
+    snakeJoints = createSnake();
+
+    function updateSnake() {
+      snakeJoints[0].point.x = snake.x;
+      snakeJoints[0].point.y = snake.y;
+
+      snakeJoints[0].path = new Path2D();
+
+      for (let i = 1; i < snakeJoints.length; i++) {
+        let point = snakeJoints[i].point;
+
+        let anchor = snakeJoints[i - 1].point;
+        snakeJoints[i].path = new Path2D();
+
+        constrainDistance(point, anchor, snake.jointDistance);
+      }
+    }
+
+    function drawPoint(x, y) {
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = "violet";
+      ctx.fill();
+    }
+
+    function drawSnakeDebug() {
+      for (let i = 0; i < snakeJoints.length; i++) {
+        let joint = snakeJoints[i];
+        ctx.stroke(joint.path);
+        drawPoint(joint.point.x, joint.point.y);
+      }
+    }
+
+    // function createCoin(x, y, radius) {
+    //   ctx.beginPath();
+    //   ctx.arc(x, y, radius, 0, Math.PI * 2);
+    //   ctx.fillStyle = "pink";
+    //   ctx.fill();
+    //   ctx.closePath();
+    // }
+
+    function spawnRandomCoin() {
+      const radius = coin.radius;
+      coin.x = Math.random() * (canvas.width - 2 * radius) + radius;
+      coin.y = Math.random() * (canvas.height - 2 * radius) + radius;
+    }
+
+    function gameLoop() {
+      //is basically a for loop
+      //all calc happens between wiping and drawing
+      ctx.clearRect(0, 0, 500, 500);
+
+      //Game Object Creation
+      //Define all new game objects here
+      scoreCounter(0); //hardcoded for now else undefined
+      updateSnake();
+
+      //createCoin(100, 100, 10);
+
+      //Create all game objects dimensions
+
+      for (let i = 1; i < snakeJoints.length; i++) {
+        const joint = snakeJoints[i];
+        const previousJoint = snakeJoints[i - 1];
+        previousJoint.path.moveTo(previousJoint.point.x, previousJoint.point.y);
+        previousJoint.path.lineTo(joint.point.x, joint.point.y);
+      }
+
+      //All game calculations below this point
+
+      // if (keys.w) snake.y -= snake.speed;
+      // if (keys.a) snake.x -= snake.speed;
+      // if (keys.s) snake.y += snake.speed;
+      // if (keys.d) snake.x += snake.speed;
+
+      //After all calculations, draw
+
+      const coinPath = new Path2D();
+      coinPath.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+      ctx.fillStyle = "pink";
+      ctx.fill(coinPath);
+
+      drawSnakeDebug();
+      requestAnimationFrame(gameLoop);
+    }
+    spawnRandomCoin();
+    gameLoop();
+
+    //homework: Add a score counter displayed at the top. Add the coin back to the game. Figure out how to pick up the coin and make the counter go up.
+  </script>
+</html>
+```
