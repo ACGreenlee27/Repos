@@ -21,6 +21,9 @@
     const keys = {};
 
     const collisionSound = new Audio("src/sound/coinPop.mp3");
+    const gameOverSound = new Audio("src/sound/gameOverSound.mp3");
+    const gameOver = new Image();
+    gameOver.src = "src/img/gameover.png";
 
     // document.addEventListener("mousemove", function (event) {
     //   const rectangle = canvas.getBoundingClientRect();
@@ -39,8 +42,11 @@
       keys[event.key.toLowerCase()] = false;
     });
 
-    function playSound() {
+    function playPop() {
       collisionSound.play();
+    }
+    function playGameOver() {
+      gameOverSound.play();
     }
 
     //All global vars here
@@ -86,6 +92,11 @@
 
     let resetCoin = true;
     let snakeJoints = [];
+    let isGameOver = false;
+
+    function gameOverScreen() {
+      ctx.drawImage(gameOver, 0, 0, canvas.width, canvas.height);
+    }
 
     function scoreCounter(score) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -107,6 +118,8 @@
     function updateScore() {
       gameObjects.score = gameObjects.score + 10;
     }
+
+    //Display Highscore
 
     function calculateDistance(pointA, pointB) {
       //Calculating the distance between two points
@@ -232,6 +245,25 @@
     spawnRandomCoin();
 
     function gameLoop() {
+      if (isGameOver) return;
+
+      if (
+        !(
+          //!Is not
+          (
+            snake.x >= 0 &&
+            snake.y >= 0 &&
+            snake.x <= canvas.width &&
+            snake.y <= canvas.height
+          )
+        )
+      ) {
+        isGameOver = true;
+        gameOverScreen();
+        playGameOver();
+        return;
+      }
+
       //is basically a for loop
       //all calc happens between wiping and drawing
       ctx.clearRect(0, 0, 500, 500);
@@ -260,6 +292,8 @@
       //automatic movement
       snake.x += Math.cos(snake.direction) * snake.speed;
       snake.y += Math.sin(snake.direction) * snake.speed;
+      console.log(snake.x);
+      console.log(snake.y);
 
       //After all calculations, draw
 
@@ -270,7 +304,7 @@
 
       if (ctx.isPointInPath(coinPath, snake.x, snake.y)) {
         updateScore();
-        playSound();
+        playPop();
         addSnakeJoint();
         spawnRandomCoin();
       }
