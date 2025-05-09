@@ -22,8 +22,16 @@
 
     const collisionSound = new Audio("src/sound/coinPop.mp3");
     const gameOverSound = new Audio("src/sound/gameOverSound.mp3");
+    const titleMusic = new Audio("src/sound/TitleMusic.mp3");
     const gameOver = new Image();
+    const crownSprite = new Image();
+    const titleScreen = new Image();
+    const canvasBackground = new Image();
+
     gameOver.src = "src/img/gameover.png";
+    crownSprite.src = "src/img/CrownSprite.png";
+    titleScreen.src = "src/img/TitleScreen.png";
+    canvasBackground.src = "src/img/CanvasBackground.png";
 
     // document.addEventListener("mousemove", function (event) {
     //   const rectangle = canvas.getBoundingClientRect();
@@ -47,6 +55,30 @@
     }
     function playGameOver() {
       gameOverSound.play();
+    }
+    function playTitleMusic() {
+      titleMusic.play();
+    }
+
+    function titleScreenHandler() {
+      //Needs to draw the title image then produce a button to start game loop
+      //Game loop should then clear the screen and start the game
+
+      ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "white";
+      ctx.font = "24px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("Press Enter", canvas.width / 2, canvas.height - 100);
+      titleMusic.loop = true;
+      playTitleMusic();
+      document.addEventListener("keydown", startGame);
+    }
+    function startGame(e) {
+      if (e.key === "Enter") {
+        document.removeEventListener("keydown", startGame);
+        gameLoop();
+      }
     }
 
     //All global vars here
@@ -93,13 +125,15 @@
     let resetCoin = true;
     let snakeJoints = [];
     let isGameOver = false;
+    let crownOffset = 0;
+    let crownDirection = 1;
 
     function gameOverScreen() {
       ctx.drawImage(gameOver, 0, 0, canvas.width, canvas.height);
     }
 
     function scoreCounter(score) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const boxWidth = 50;
       const boxHeight = 30;
@@ -245,6 +279,8 @@
     spawnRandomCoin();
 
     function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(canvasBackground, 0, 0, canvas.width, canvas.height); //Not working? Why is this failing?
       if (isGameOver) return;
 
       if (
@@ -260,17 +296,19 @@
       ) {
         isGameOver = true;
         gameOverScreen();
+        titleMusic.pause();
+        titleMusic.currentTime = 0;
         playGameOver();
+
         return;
       }
 
       //is basically a for loop
       //all calc happens between wiping and drawing
-      ctx.clearRect(0, 0, 500, 500);
 
       //Game Object Creation
       //Define all new game objects here
-      scoreCounter(gameObjects.score); //hardcoded for now else undefined
+      scoreCounter(gameObjects.score);
       updateSnake();
 
       //createCoin(100, 100, 10);
@@ -295,14 +333,39 @@
       console.log(snake.x);
       console.log(snake.y);
 
+      crownOffset += crownDirection * 0.3;
+      if (crownOffset > 5 || crownOffset < -5) {
+        // || = OR
+        crownDirection *= -1;
+      }
+
       //After all calculations, draw
 
-      const coinPath = new Path2D();
-      coinPath.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
-      ctx.fillStyle = "pink";
-      ctx.fill(coinPath);
+      // const coinPath = new Path2D();
+      // coinPath.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+      // ctx.fillStyle = "pink";
+      // ctx.fill(coinPath);
+      ctx.drawImage(
+        crownSprite,
+        coin.x - coin.radius,
+        coin.y - coin.radius + crownOffset,
+        coin.radius * 2,
+        coin.radius * 2
+      );
 
-      if (ctx.isPointInPath(coinPath, snake.x, snake.y)) {
+      // if (ctx.isPointInPath(coinPath, snake.x, snake.y)) {
+      //   updateScore();
+      //   playPop();
+      //   addSnakeJoint();
+      //   spawnRandomCoin();
+      // }
+
+      if (
+        snake.x > coin.x - coin.radius &&
+        snake.x < coin.x + coin.radius &&
+        snake.y > coin.y - coin.radius &&
+        snake.y < coin.y + coin.radius
+      ) {
         updateScore();
         playPop();
         addSnakeJoint();
@@ -313,9 +376,27 @@
       requestAnimationFrame(gameLoop);
     }
 
-    gameLoop();
+    // titleScreen.onload = () => { //on load waits for the images to load instead of having to setTimeout
+    //   titleScreenHandler();
+    // };
+
+    let imagesLoaded = 0;
+
+    function tryStartGame() {
+      imagesLoaded++;
+      if (imagesLoaded === 2) {
+        titleScreenHandler();
+      }
+    }
+
+    titleScreen.onload = tryStartGame;
+    canvasBackground.onload = tryStartGame;
 
     //homework: Detect when snake head comes in contact with the arena, kill the snake
-    //Sound fx and animations
+    //Sound fx and animations???
+    //Known Bugs:
+    //Crown sound doesn't play if you capture the crown too quickly
+    //Crown goes half outside the canvas - I kinda like this, adds difficulty lol
+    //Canvas Background is not displaying - FIXED. ScoreCounter was clearing screen before it could load
   </script>
 </html>
