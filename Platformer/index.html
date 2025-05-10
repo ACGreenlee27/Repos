@@ -33,20 +33,20 @@
     titleScreen.src = "src/img/TitleScreen.png";
     canvasBackground.src = "src/img/CanvasBackground.png";
 
-    // document.addEventListener("mousemove", function (event) {
-    //   const rectangle = canvas.getBoundingClientRect();
-    //   snake.x = event.clientX - rectangle.left;
-    //   snake.y = event.clientY - rectangle.top;
-    // });
+    document.addEventListener("mousemove", function (event) {
+      const rectangle = canvas.getBoundingClientRect();
+      snake.x = event.clientX - rectangle.left;
+      snake.y = event.clientY - rectangle.top;
+    });
 
     document.addEventListener("keydown", function (event) {
       //Homework: Listeners await an action.
       //This function awaits the user depressing a key and switches it to lower case.
-      console.log(event.key);
+      // console.log(event.key);
       keys[event.key.toLowerCase()] = true;
     });
     document.addEventListener("keyup", function (event) {
-      console.log(event.key);
+      //console.log(event.key);
       keys[event.key.toLowerCase()] = false;
     });
 
@@ -71,11 +71,13 @@
       ctx.textAlign = "center";
       ctx.fillText("Press Enter", canvas.width / 2, canvas.height - 100);
       titleMusic.loop = true;
-      playTitleMusic();
+      //playTitleMusic();
       document.addEventListener("keydown", startGame);
     }
     function startGame(e) {
+      console.log("Start Game.");
       if (e.key === "Enter") {
+        isGameOver = false;
         document.removeEventListener("keydown", startGame);
         gameLoop();
       }
@@ -130,11 +132,18 @@
 
     function gameOverScreen() {
       ctx.drawImage(gameOver, 0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      ctx.font = "24px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(
+        "Press Enter to restart?",
+        canvas.width / 2,
+        canvas.height - 100
+      );
+      document.addEventListener("keydown", startGame);
     }
 
     function scoreCounter(score) {
-      // ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       const boxWidth = 50;
       const boxHeight = 30;
       const x = canvas.width - boxWidth - 5;
@@ -217,6 +226,25 @@
 
     snakeJoints = createSnake();
 
+    function checkCollision() {
+      let head = snakeJoints[0].point;
+      for (let i = 2; i < snakeJoints.length; i++) {
+        let currentJoint = snakeJoints[i].point;
+        let distance = calculateDistance(head, currentJoint);
+        if (distance < 10) {
+          isGameOver = true;
+          gameOverScreen();
+          titleMusic.pause();
+          titleMusic.currentTime = 0;
+          playGameOver();
+
+          return true;
+          console.log("Close");
+        }
+      }
+      return false;
+    }
+
     function updateSnake() {
       snakeJoints[0].point.x = snake.x;
       snakeJoints[0].point.y = snake.y;
@@ -263,6 +291,16 @@
       }
     }
 
+    function endGameHandler() {
+      isGameOver = true;
+      gameOverScreen();
+      titleMusic.pause();
+      titleMusic.currentTime = 0;
+      playGameOver();
+
+      return;
+    }
+
     // function createCoin(x, y, radius) {
     //   ctx.beginPath();
     //   ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -279,9 +317,9 @@
     spawnRandomCoin();
 
     function gameLoop() {
+      if (isGameOver) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(canvasBackground, 0, 0, canvas.width, canvas.height); //Not working? Why is this failing?
-      if (isGameOver) return;
 
       if (
         !(
@@ -308,8 +346,18 @@
 
       //Game Object Creation
       //Define all new game objects here
-      scoreCounter(gameObjects.score);
+
       updateSnake();
+      if (checkCollision() === true) {
+        isGameOver = true;
+        gameOverScreen();
+        titleMusic.pause();
+        titleMusic.currentTime = 0;
+        playGameOver();
+
+        return;
+      }
+      scoreCounter(gameObjects.score);
 
       //createCoin(100, 100, 10);
 
@@ -324,14 +372,14 @@
 
       //All game calculations below this point
 
-      if (keys.a) snake.direction -= 0.01;
-      if (keys.d) snake.direction += 0.01;
+      // if (keys.a) snake.direction -= 0.01;
+      // if (keys.d) snake.direction += 0.01;
 
       //automatic movement
-      snake.x += Math.cos(snake.direction) * snake.speed;
-      snake.y += Math.sin(snake.direction) * snake.speed;
-      console.log(snake.x);
-      console.log(snake.y);
+      // snake.x += Math.cos(snake.direction) * snake.speed;
+      // snake.y += Math.sin(snake.direction) * snake.speed;
+      // console.log(snake.x);
+      // console.log(snake.y);
 
       crownOffset += crownDirection * 0.3;
       if (crownOffset > 5 || crownOffset < -5) {
@@ -380,17 +428,17 @@
     //   titleScreenHandler();
     // };
 
-    let imagesLoaded = 0;
+    // let imagesLoaded = 0;
 
-    function tryStartGame() {
-      imagesLoaded++;
-      if (imagesLoaded === 2) {
-        titleScreenHandler();
-      }
-    }
+    // function tryStartGame() {
+    //   imagesLoaded++;
+    //   if (imagesLoaded === 2) {
+    //     titleScreenHandler();
+    //   }
+    // }
 
-    titleScreen.onload = tryStartGame;
-    canvasBackground.onload = tryStartGame;
+    titleScreen.onload = titleScreenHandler;
+    // canvasBackground.onload = tryStartGame;
 
     //homework: Detect when snake head comes in contact with the arena, kill the snake
     //Sound fx and animations???
@@ -398,5 +446,13 @@
     //Crown sound doesn't play if you capture the crown too quickly
     //Crown goes half outside the canvas - I kinda like this, adds difficulty lol
     //Canvas Background is not displaying - FIXED. ScoreCounter was clearing screen before it could load
+    //Volume?
+    //Final and highest score
+    //Restarting the game
+    //Dynamic title screen
+    //Dragon is not dots
+    //Blinking enter text
+    //Parallax for the background
+    //Fix restart
   </script>
 </html>
