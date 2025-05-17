@@ -32,11 +32,18 @@
     const crownSprite = new Image();
     const titleScreen = new Image();
     const canvasBackground = new Image();
+    const backgroundBlank = new Image();
+    const Cloud1 = new Image();
+    const Cloud2 = new Image();
 
     gameOver.src = "src/img/gameover.png";
     crownSprite.src = "src/img/CrownSprite.png";
     titleScreen.src = "src/img/TitleScreen.png";
     canvasBackground.src = "src/img/CanvasBackground.png";
+    backgroundBlank.src = "src/img/BackgroundBlank.png";
+    Cloud1.src = "src/img/Cloud1.png";
+    Cloud2.src = "src/img/Cloud2.png";
+
     //mute.src = "src/img/mute.png";
     //unmute.src = "src/img/unmute.png";
 
@@ -46,6 +53,49 @@
     //   snake.y = event.clientY - rectangle.top;
     // });
 
+    let clouds = [
+      {
+        x: 10,
+        y: 80,
+        speed: 0.6,
+        cloudImage: Cloud2,
+      },
+      {
+        x: 150,
+        y: 10,
+        speed: 0.2,
+        cloudImage: Cloud2,
+      },
+      {
+        x: 160,
+        y: 160,
+        speed: 0.3,
+        cloudImage: Cloud1,
+      },
+      {
+        x: 150,
+        y: 40,
+        speed: 0.1,
+        cloudImage: Cloud1,
+      },
+    ];
+
+    function drawParallax() {
+      ctx.drawImage(backgroundBlank, 0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < clouds.length; i++) {
+        let offset = clouds[i].x + clouds[i].speed;
+
+        if (offset > 500) {
+          offset = -150;
+        }
+
+        clouds[i].x = offset;
+        ctx.drawImage(clouds[i].cloudImage, clouds[i].x, clouds[i].y, 150, 150);
+      }
+
+      // ctx.drawImage(Cloud1, cloud1pos.x, cloud1pos.y, 150, 150);
+      // ctx.drawImage(Cloud2, cloud2pos.x, cloud2pos.y, 150, 150);
+    }
     document.addEventListener("keydown", function (event) {
       //Homework: Listeners await an action.
       //This function awaits the user depressing a key and switches it to lower case.
@@ -81,7 +131,7 @@
       //Needs to draw the title image then produce a button to start game loop
       //Game loop should then clear the screen and start the game
 
-      ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
+      //ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
 
       titleMusic.loop = true;
       titleMusic.volume = 0.01;
@@ -91,8 +141,8 @@
 
       function blinkText() {
         if (!isTitleScreen) return;
-        ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
-
+        //ctx.drawImage(backgroundBlank, 0, 0, canvas.width, canvas.height);
+        drawParallax();
         if (frame % 30 < 15) {
           ctx.fillStyle = "white";
           ctx.font = "24px 'Press Start 2P'";
