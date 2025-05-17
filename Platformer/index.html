@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
     <title>A simple HTML document</title>
   </head>
 
@@ -32,12 +37,14 @@
     crownSprite.src = "src/img/CrownSprite.png";
     titleScreen.src = "src/img/TitleScreen.png";
     canvasBackground.src = "src/img/CanvasBackground.png";
+    //mute.src = "src/img/mute.png";
+    //unmute.src = "src/img/unmute.png";
 
-    document.addEventListener("mousemove", function (event) {
-      const rectangle = canvas.getBoundingClientRect();
-      snake.x = event.clientX - rectangle.left;
-      snake.y = event.clientY - rectangle.top;
-    });
+    // document.addEventListener("mousemove", function (event) {
+    //   const rectangle = canvas.getBoundingClientRect();
+    //   snake.x = event.clientX - rectangle.left;
+    //   snake.y = event.clientY - rectangle.top;
+    // });
 
     document.addEventListener("keydown", function (event) {
       //Homework: Listeners await an action.
@@ -60,27 +67,49 @@
       titleMusic.play();
     }
 
+    function startGame(e) {
+      console.log("Start Game.");
+      if (e.key === "Enter") {
+        isTitleScreen = false;
+        isGameOver = false;
+        document.removeEventListener("keydown", startGame);
+        resetGame();
+        gameLoop();
+      }
+    }
     function titleScreenHandler() {
       //Needs to draw the title image then produce a button to start game loop
       //Game loop should then clear the screen and start the game
 
       ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "white";
-      ctx.font = "24px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText("Press Enter", canvas.width / 2, canvas.height - 100);
       titleMusic.loop = true;
-      //playTitleMusic();
+      titleMusic.volume = 0.01;
+      playTitleMusic();
+
       document.addEventListener("keydown", startGame);
-    }
-    function startGame(e) {
-      console.log("Start Game.");
-      if (e.key === "Enter") {
-        isGameOver = false;
-        document.removeEventListener("keydown", startGame);
-        gameLoop();
+
+      function blinkText() {
+        if (!isTitleScreen) return;
+        ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
+
+        if (frame % 30 < 15) {
+          ctx.fillStyle = "white";
+          ctx.font = "24px 'Press Start 2P'";
+          ctx.textAlign = "center";
+          ctx.fillText("Press Enter", canvas.width / 2, canvas.height - 100);
+        }
+
+        frame++;
+        requestAnimationFrame(blinkText);
       }
+
+      blinkText();
+    }
+
+    function muteButtonHandler() {
+      //displays a mute button (mute.png). On click, the image changes to the unmute.png and plays title music
+      //The user is able to retoggle this at any point to turn title music off
     }
 
     //All global vars here
@@ -129,18 +158,49 @@
     let isGameOver = false;
     let crownOffset = 0;
     let crownDirection = 1;
+    let frame = 0;
+    let isTitleScreen = true;
+    let blinkFrame = 0;
 
     function gameOverScreen() {
+      //cant get gamer over text to blink and its pmo
+      isGameOver = true;
       ctx.drawImage(gameOver, 0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "white";
-      ctx.font = "24px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(
-        "Press Enter to restart?",
-        canvas.width / 2,
-        canvas.height - 100
-      );
+      let blinkFrame = 0;
+
+      function blinkRestartText() {
+        if (!isGameOver) return;
+
+        ctx.drawImage(gameOver, 0, 0, canvas.width, canvas.height);
+
+        if (blinkFrame % 30 < 15) {
+          ctx.fillStyle = "white";
+          ctx.font = "24px 'Press Start 2P'";
+          ctx.textAlign = "center";
+          ctx.fillText("Press Enter", canvas.width / 2, canvas.height - 100);
+        }
+
+        blinkFrame++;
+        requestAnimationFrame(blinkRestartText);
+      }
+
+      blinkRestartText();
       document.addEventListener("keydown", startGame);
+    }
+
+    function resetGame() {
+      snake.x = 0;
+      snake.y = 37;
+      snake.direction = 0;
+
+      gameObjects.score = 0;
+
+      snakeJoints = createSnake();
+
+      spawnRandomCoin();
+
+      titleMusic.currentTime = 0;
+      titleMusic.play();
     }
 
     function scoreCounter(score) {
@@ -315,8 +375,15 @@
       coin.y = Math.floor((Math.random() * canvas.height) / 2);
     }
     spawnRandomCoin();
+    localStorage.setItem("high score", 100);
 
-    function gameLoop() {
+    let currentHighScore = localStorage.getItem("high score");
+    console.log(currentHighScore);
+
+    // check current score against high score and update currentHighScore
+
+    function gameLoop(timestamp) {
+      console.log(timestamp);
       if (isGameOver) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(canvasBackground, 0, 0, canvas.width, canvas.height); //Not working? Why is this failing?
@@ -372,14 +439,14 @@
 
       //All game calculations below this point
 
-      // if (keys.a) snake.direction -= 0.01;
-      // if (keys.d) snake.direction += 0.01;
+      if (keys.a) snake.direction -= 0.01;
+      if (keys.d) snake.direction += 0.01;
 
       //automatic movement
-      // snake.x += Math.cos(snake.direction) * snake.speed;
-      // snake.y += Math.sin(snake.direction) * snake.speed;
-      // console.log(snake.x);
-      // console.log(snake.y);
+      snake.x += Math.cos(snake.direction) * snake.speed;
+      snake.y += Math.sin(snake.direction) * snake.speed;
+      console.log(snake.x);
+      console.log(snake.y);
 
       crownOffset += crownDirection * 0.3;
       if (crownOffset > 5 || crownOffset < -5) {
@@ -421,6 +488,7 @@
       }
 
       drawSnakeDebug();
+      frame++;
       requestAnimationFrame(gameLoop);
     }
 
@@ -442,11 +510,12 @@
 
     //homework: Detect when snake head comes in contact with the arena, kill the snake
     //Sound fx and animations???
+
     //Known Bugs:
     //Crown sound doesn't play if you capture the crown too quickly
     //Crown goes half outside the canvas - I kinda like this, adds difficulty lol
     //Canvas Background is not displaying - FIXED. ScoreCounter was clearing screen before it could load
-    //Volume?
+    //Volume? - Fixed
     //Final and highest score
     //Restarting the game
     //Dynamic title screen
