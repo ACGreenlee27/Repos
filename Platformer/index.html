@@ -35,6 +35,10 @@
     const backgroundBlank = new Image();
     const Cloud1 = new Image();
     const Cloud2 = new Image();
+    const titleCard = new Image();
+    const head = new Image();
+    const body = new Image();
+    const tail = new Image();
 
     gameOver.src = "src/img/gameover.png";
     crownSprite.src = "src/img/CrownSprite.png";
@@ -43,6 +47,10 @@
     backgroundBlank.src = "src/img/BackgroundBlank.png";
     Cloud1.src = "src/img/Cloud1.png";
     Cloud2.src = "src/img/Cloud2.png";
+    titleCard.src = "src/img/title.png";
+    head.src = "src/img/head.png";
+    body.src = "src/img/body.png";
+    tail.src = "src/img/tail.png";
 
     //mute.src = "src/img/mute.png";
     //unmute.src = "src/img/unmute.png";
@@ -73,12 +81,25 @@
         cloudImage: Cloud1,
       },
       {
-        x: 150,
+        x: 0,
         y: 40,
         speed: 0.1,
         cloudImage: Cloud1,
       },
+      {
+        x: 100,
+        y: 40,
+        speed: 0.1,
+        cloudImage: Cloud1,
+      },
+      {
+        x: 0,
+        y: 40,
+        speed: 0.4,
+        cloudImage: Cloud2,
+      },
     ];
+    let crownFloatAngle = 0;
 
     function drawParallax() {
       ctx.drawImage(backgroundBlank, 0, 0, canvas.width, canvas.height);
@@ -131,7 +152,7 @@
       //Needs to draw the title image then produce a button to start game loop
       //Game loop should then clear the screen and start the game
 
-      //ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(titleCard, 0, 0, canvas.width, canvas.height);
 
       titleMusic.loop = true;
       titleMusic.volume = 0.01;
@@ -142,7 +163,19 @@
       function blinkText() {
         if (!isTitleScreen) return;
         //ctx.drawImage(backgroundBlank, 0, 0, canvas.width, canvas.height);
+
         drawParallax();
+        let floatY = Math.sin(crownFloatAngle) * 5; // 5px vertical float
+        crownFloatAngle += 0.05;
+
+        ctx.save();
+        ctx.shadowColor = "rgba(255, 255, 0, 0.7)";
+        ctx.shadowBlur = 30;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.drawImage(crownSprite, 175, 70 + floatY, 150, 150);
+        ctx.restore();
+        ctx.drawImage(titleCard, 0, 0, canvas.width, canvas.height);
         if (frame % 30 < 15) {
           ctx.fillStyle = "white";
           ctx.font = "24px 'Press Start 2P'";
@@ -401,6 +434,25 @@
       }
     }
 
+    // function drawSnake() {
+    //   for (let i = 0; i < snakeJoints.length; i++) {
+    //     const joint = snakeJoints[i].point;
+
+    //     // Choose image based on position
+    //     let img;
+    //     if (i === 0) {
+    //       img = head;
+    //     } else if (i === snakeJoints.length - 1) {
+    //       img = tail;
+    //     } else {
+    //       img = body;
+    //     }
+
+    //     // Draw image centered on the joint
+    //     ctx.drawImage(img, joint.x - 10, joint.y - 10, 20, 20);
+    //   }
+    // }
+
     function endGameHandler() {
       isGameOver = true;
       gameOverScreen();
@@ -538,6 +590,7 @@
       }
 
       drawSnakeDebug();
+      //drawSnake();
       frame++;
       requestAnimationFrame(gameLoop);
     }
