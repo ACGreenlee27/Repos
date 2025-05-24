@@ -244,30 +244,64 @@
     let frame = 0;
     let isTitleScreen = true;
     let blinkFrame = 0;
+    let gameOverCrownFloatAngle = 0;
 
     function gameOverScreen() {
-      //cant get gamer over text to blink and its pmo
       isGameOver = true;
-      ctx.drawImage(gameOver, 0, 0, canvas.width, canvas.height);
-      let blinkFrame = 0;
+      snake.speed = 0.5;
 
-      function blinkRestartText() {
+      let currentHighScore = Number(localStorage.getItem("high score"));
+      if (currentHighScore < gameObjects.score) {
+        localStorage.setItem("high score", gameObjects.score);
+      }
+
+      let floatAngle = 0;
+
+      function blinkText() {
         if (!isGameOver) return;
 
+        ctx.drawImage(canvasBackground, 0, 0, canvas.width, canvas.height);
         ctx.drawImage(gameOver, 0, 0, canvas.width, canvas.height);
 
+        // Floating glow crown above HIGH SCORE
+        let floatY = Math.sin(floatAngle) * 5;
+        floatAngle += 0.05;
+
+        ctx.save();
+        ctx.shadowColor = "rgba(255, 215, 0, 0.7)"; // gold glow
+        ctx.shadowBlur = 30;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Crown above the HIGH SCORE label
+        ctx.drawImage(
+          crownSprite,
+          canvas.width / 2 - 75,
+          canvas.height - 500 + floatY,
+          150,
+          150
+        );
+        ctx.restore();
+
+        // HIGH SCORE label
+        ctx.fillStyle = "white";
+        ctx.font = "24px 'Press Start 2P'";
+        ctx.textAlign = "center";
+        ctx.fillText("HIGH SCORE", canvas.width / 2, canvas.height - 340);
+
+        // Actual score value
+        ctx.fillText(gameObjects.score, canvas.width / 2, canvas.height - 300);
+
+        // Blinking "Press Enter"
         if (blinkFrame % 30 < 15) {
-          ctx.fillStyle = "white";
-          ctx.font = "24px 'Press Start 2P'";
-          ctx.textAlign = "center";
-          ctx.fillText("Press Enter", canvas.width / 2, canvas.height - 100);
+          ctx.fillText("Press Enter", canvas.width / 2, canvas.height - 150);
         }
 
         blinkFrame++;
-        requestAnimationFrame(blinkRestartText);
+        requestAnimationFrame(blinkText);
       }
 
-      blinkRestartText();
+      blinkText();
       document.addEventListener("keydown", startGame);
     }
 
@@ -292,7 +326,8 @@
       const x = canvas.width - boxWidth - 5;
       const y = 5;
 
-      (ctx.fillStyle = "lilac"), ctx.fillRect(x, y, boxWidth, boxHeight);
+      ctx.fillStyle = "violet";
+      ctx.fillRect(x, y, boxWidth, boxHeight);
 
       ctx.fillStyle = "white";
       ctx.font = "15px monospace";
@@ -306,6 +341,31 @@
     }
 
     //Display Highscore
+
+    function displayHighestScore() {
+      // localStorage.setItem("high score");
+
+      let currentHighScore = localStorage.getItem("high score");
+      console.log(currentHighScore);
+
+      if (currentHighScore === null) {
+        localStorage.setItem("high score", 0);
+      }
+
+      const boxWidth = 50;
+      const boxHeight = 30;
+      const x = canvas.width - boxWidth - 60;
+      const y = 5;
+
+      ctx.fillStyle = "violet";
+      ctx.fillRect(x, y, boxWidth, boxHeight);
+
+      ctx.fillStyle = "white";
+      ctx.font = "15px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(currentHighScore, x + boxWidth / 2, y + boxHeight / 2); //divide by two so it centers
+    }
 
     function calculateDistance(pointA, pointB) {
       //Calculating the distance between two points
@@ -425,13 +485,26 @@
       ctx.fillStyle = "violet";
       ctx.fill();
     }
-
     function drawSnakeDebug() {
+      // Set glow properties
+      ctx.strokeStyle = "violet";
+      ctx.lineWidth = 6;
+      ctx.shadowColor = "rgba(238, 130, 238, 0.4)"; // violet glow with alpha
+      ctx.shadowBlur = 10; // soft glow
+
       for (let i = 0; i < snakeJoints.length; i++) {
         let joint = snakeJoints[i];
+
+        // Draw the glowing path
         ctx.stroke(joint.path);
+
+        // Draw the glowing dot
         drawPoint(joint.point.x, joint.point.y);
       }
+
+      // Reset shadows so they don’t affect other drawings
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
     }
 
     // function drawSnake() {
@@ -448,8 +521,30 @@
     //       img = body;
     //     }
 
+    //     let angle = 0;
+    //     //calculate angle
+    //     if (i < snakeJoints.length - 1) {
+    //       const nextJoint = snakeJoints[i + 1].point;
+    //       angle = Math.atan2(nextJoint.y - joint.y, nextJoint.x - joint.x);
+    //     } else {
+    //       const nextJoint = snakeJoints[i - 1].point;
+    //       angle = Math.atan2(nextJoint.y - joint.y, nextJoint.x - joint.x);
+    //     }
+
+    //     ctx.save(); //saves canvas state
+
+    //     ctx.translate(joint.x, joint.y); //move the origin point of the joint
+    //     ctx.rotate(angle); //rotate image
+
     //     // Draw image centered on the joint
-    //     ctx.drawImage(img, joint.x - 10, joint.y - 10, 20, 20);
+
+    //     if (i === snakeJoints.length - 1) {
+    //       ctx.scale(-1, 1);
+    //     } else {
+    //       ctx.scale(1, -1);
+    //     }
+    //     ctx.drawImage(img, -10, -10, 20, 20);
+    //     ctx.restore(); //restore canvas state
     //   }
     // }
 
@@ -477,15 +572,11 @@
       coin.y = Math.floor((Math.random() * canvas.height) / 2);
     }
     spawnRandomCoin();
-    localStorage.setItem("high score", 100);
-
-    let currentHighScore = localStorage.getItem("high score");
-    console.log(currentHighScore);
 
     // check current score against high score and update currentHighScore
 
     function gameLoop(timestamp) {
-      console.log(timestamp);
+      // console.log(timestamp);
       if (isGameOver) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(canvasBackground, 0, 0, canvas.width, canvas.height); //Not working? Why is this failing?
@@ -541,14 +632,14 @@
 
       //All game calculations below this point
 
-      if (keys.a) snake.direction -= 0.01;
-      if (keys.d) snake.direction += 0.01;
+      if (keys.a) snake.direction -= 0.02;
+      if (keys.d) snake.direction += 0.02;
 
       //automatic movement
       snake.x += Math.cos(snake.direction) * snake.speed;
       snake.y += Math.sin(snake.direction) * snake.speed;
-      console.log(snake.x);
-      console.log(snake.y);
+      // console.log(snake.x);
+      // console.log(snake.y);
 
       crownOffset += crownDirection * 0.3;
       if (crownOffset > 5 || crownOffset < -5) {
@@ -587,10 +678,12 @@
         playPop();
         addSnakeJoint();
         spawnRandomCoin();
+        snake.speed += 0.02;
       }
 
       drawSnakeDebug();
-      //drawSnake();
+      // drawSnake();
+      displayHighestScore();
       frame++;
       requestAnimationFrame(gameLoop);
     }
